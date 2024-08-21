@@ -56,6 +56,7 @@ class NGXSpectrometer(BaseSpectrometer, IsotopxMixin):
     acq_count = 0
     total_acq_count = 10
     has_atonas = True
+    triggered_lock_release_required = False
 
     def _microcontroller_default(self):
         service = "pychron.hardware.isotopx_spectrometer_controller.NGXController"
@@ -129,6 +130,7 @@ class NGXSpectrometer(BaseSpectrometer, IsotopxMixin):
 
         if not self.microcontroller.triggered:
             self.microcontroller.lock.acquire()
+            self.triggered_lock_release_required = True
             # self.ask("StopAcq", verbose=verbose)
             self.microcontroller.stop_acquisition()
             self.microcontroller.triggered = True
@@ -297,11 +299,13 @@ class NGXSpectrometer(BaseSpectrometer, IsotopxMixin):
         except RuntimeError as e:
             self.debug(f'Cannot release lock. "RuntimeError" {e}')
 
-        if trigger_release:
-            try:
-                self.microcontroller.lock.release()
-            except RuntimeError as e:
-                self.debug(f'Trigger Release. Cannot release lock. "RuntimeError" {e}')
+        if self.triggered_lock_release_required:
+            self.triggered_lock_release_required = False
+            if trigger_release:
+                try:
+                    self.microcontroller.lock.release()
+                except RuntimeError as e:
+                    self.debug(f'Trigger Release. Cannot release lock. "RuntimeError" {e}')
 
         return keys, signals, collection_time, inc
 
