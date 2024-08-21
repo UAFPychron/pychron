@@ -206,7 +206,7 @@ class NGXSpectrometer(BaseSpectrometer, IsotopxMixin):
         trigger_release = False
         if trigger or not self.microcontroller.triggered:
             resp = self.trigger_acq()
-            trigger_release = True
+            trigger_release = self.microcontroller.triggered
             # self.microcontroller.lock.release()
             if resp is not None:
                 # if verbose:
