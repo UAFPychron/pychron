@@ -32,7 +32,7 @@ class NGXMagnet(IsotopxMagnet):
     def read_mass(self):
         # self.ask("StopAcq")
         self.microcontroller.stop_acquisition()
-        self.microcontroller.triggered = False
+        # self.microcontroller.triggered = False
         return self.ask("GETMASS")
 
     def set_mass(self, v, delay=None, deflect=False):

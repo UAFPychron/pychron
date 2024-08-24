@@ -40,12 +40,13 @@ class NGXGPActuator(ASCIIGPActuator):
         s = self.application.get_service(service)
         if s is not None:
             self.controller = s
+            self._lock = self.controller.lock
             return True
 
     def actuate(self, *args, **kw):
         # self.ask("StopAcq")
         self.controller.stop_acquisition()
-        self.controller.canceled = True
+        # self.controller.canceled = True
         # time.sleep(1)
         return super(NGXGPActuator, self).actuate(*args, **kw)
 

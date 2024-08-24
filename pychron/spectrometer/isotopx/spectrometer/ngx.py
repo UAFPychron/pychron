@@ -326,7 +326,7 @@ class NGXSpectrometer(BaseSpectrometer, IsotopxMixin):
         self.microcontroller.stop_acquisition()
         self.ask("SetAcqPeriod 1000")
         self._read_enabled = False
-        self.microcontroller.triggered = False
+        # self.microcontroller.triggered = False
         self.integration_time = it
 
         # if self.integration_time != it or force:
