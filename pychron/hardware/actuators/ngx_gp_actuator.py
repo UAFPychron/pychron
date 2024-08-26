@@ -40,7 +40,7 @@ class NGXGPActuator(ASCIIGPActuator):
         s = self.application.get_service(service)
         if s is not None:
             self.controller = s
-            # self._lock = self.controller.lock
+            self._lock = self.controller.lock
             return True
 
     def actuate(self, *args, **kw):

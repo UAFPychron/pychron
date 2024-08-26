@@ -194,7 +194,7 @@ class NGXSpectrometer(BaseSpectrometer, IsotopxMixin):
         # verbose=True
         self._read_enabled = True
 
-        verbose = True
+        # verbose = True
 
         if verbose:
             self.debug(
@@ -296,6 +296,8 @@ class NGXSpectrometer(BaseSpectrometer, IsotopxMixin):
 
         try:
             self.microcontroller.lock.release()
+            self.debug(f'Released lock. {self.microcontroller.lock}')
+            time.sleep(0.25)
         except RuntimeError as e:
             self.debug(f'Cannot release lock. "RuntimeError" {e}')
 
