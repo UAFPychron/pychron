@@ -205,7 +205,7 @@ class NGXSpectrometer(BaseSpectrometer, IsotopxMixin):
 
         self.microcontroller.lock.acquire()
         resp = True
-        trigger_release = False
+        trigger_release = self.triggered_lock_release_required
         self.debug(f'trigger={trigger} triggered={self.microcontroller.triggered}')
         if trigger or not self.microcontroller.triggered:
             resp = self.trigger_acq()
@@ -310,6 +310,7 @@ class NGXSpectrometer(BaseSpectrometer, IsotopxMixin):
         #     self.microcontroller.lock.release()
         self.debug(f'trigger release. {trigger_release}')
         if trigger_release:
+            self.triggered_lock_release_required = False
             try:
                 self.microcontroller.lock.release()
             except RuntimeError as e:
