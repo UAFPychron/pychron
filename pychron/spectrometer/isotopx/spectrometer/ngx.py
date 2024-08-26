@@ -205,13 +205,13 @@ class NGXSpectrometer(BaseSpectrometer, IsotopxMixin):
 
         self.microcontroller.lock.acquire()
         resp = True
-        trigger_release = self.triggered_lock_release_required
-        self.debug(f'trigger={trigger} triggered={self.microcontroller.triggered} '
-                   f'triggered_lock_release_required={self.triggered_lock_release_required}')
+        # trigger_release = self.triggered_lock_release_required
+        # self.debug(f'trigger={trigger} triggered={self.microcontroller.triggered} '
+        #            f'triggered_locrelease_required={self.triggered_lock_release_required}')
         if trigger or not self.microcontroller.triggered:
             resp = self.trigger_acq()
-            trigger_release = self.microcontroller.triggered
-            self.debug(f'trigger_relase={trigger_release}')
+            # trigger_release = self.microcontroller.triggered
+            # self.debug(f'trigger_relase={trigger_release}')
             # self.microcontroller.lock.release()
             if resp is not None:
                 # if verbose:
@@ -309,13 +309,13 @@ class NGXSpectrometer(BaseSpectrometer, IsotopxMixin):
         # if self.microcontroller.lock.active_count() > 0:
         #     self.debug(f"trigger release. lock count={self.microcontroller.lock.count}")
         #     self.microcontroller.lock.release()
-        self.debug(f'trigger release. {trigger_release}')
-        if trigger_release:
-            self.triggered_lock_release_required = False
-            try:
-                self.microcontroller.lock.release()
-            except RuntimeError as e:
-                self.debug(f'Trigger Release. Cannot release lock. "RuntimeError" {e}')
+        # self.debug(f'trigger release. {trigger_release}')
+        # if trigger_release:
+        # self.triggered_lock_release_required = False
+        try:
+            self.microcontroller.lock.release()
+        except RuntimeError as e:
+            self.debug(f'Trigger Release. Cannot release lock. "RuntimeError" {e}')
 
         return keys, signals, collection_time, inc
 
@@ -375,6 +375,4 @@ class NGXSpectrometer(BaseSpectrometer, IsotopxMixin):
     def _integration_time_default(self):
         self.default_integration_time = ISOTOPX_DEFAULT_INTEGRATION_TIME
         return ISOTOPX_DEFAULT_INTEGRATION_TIME
-
-
 # ============= EOF =============================================
