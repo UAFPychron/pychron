@@ -206,7 +206,8 @@ class NGXSpectrometer(BaseSpectrometer, IsotopxMixin):
         self.microcontroller.lock.acquire()
         resp = True
         trigger_release = self.triggered_lock_release_required
-        self.debug(f'trigger={trigger} triggered={self.microcontroller.triggered}')
+        self.debug(f'trigger={trigger} triggered={self.microcontroller.triggered} '
+                   f'triggered_lock_release_required={self.triggered_lock_release_required}')
         if trigger or not self.microcontroller.triggered:
             resp = self.trigger_acq()
             trigger_release = self.microcontroller.triggered

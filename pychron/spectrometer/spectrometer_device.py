@@ -51,8 +51,8 @@ class SpectrometerDevice(ConfigLoadable):
                 return r
 
             if hasattr(self.microcontroller, "lock"):
-                # with self.microcontroller.lock:
-                resp = func()
+                with self.microcontroller.lock:
+                    resp = func()
             else:
                 resp = func()
 
