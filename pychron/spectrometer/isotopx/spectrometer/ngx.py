@@ -306,6 +306,7 @@ class NGXSpectrometer(BaseSpectrometer, IsotopxMixin):
         # if self.microcontroller.lock.active_count() > 0:
         #     self.debug(f"trigger release. lock count={self.microcontroller.lock.count}")
         #     self.microcontroller.lock.release()
+        self.debug(f'trigger release. {trigger_release}')
         if trigger_release:
             try:
                 self.microcontroller.lock.release()
