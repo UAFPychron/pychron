@@ -56,7 +56,7 @@ class NGXSpectrometer(BaseSpectrometer, IsotopxMixin):
     acq_count = 0
     total_acq_count = 10
     has_atonas = True
-    triggered_lock_release_required = False
+    # triggered_lock_release_required = False
 
     def _microcontroller_default(self):
         service = "pychron.hardware.isotopx_spectrometer_controller.NGXController"
@@ -129,8 +129,8 @@ class NGXSpectrometer(BaseSpectrometer, IsotopxMixin):
         #    time.sleep(0.25)
 
         if not self.microcontroller.triggered:
-            self.microcontroller.lock.acquire()
-            self.triggered_lock_release_required = True
+            # self.microcontroller.lock.acquire()
+            # self.triggered_lock_release_required = True
             # self.ask("StopAcq", verbose=verbose)
             self.microcontroller.stop_acquisition()
             self.microcontroller.triggered = True
@@ -188,13 +188,13 @@ class NGXSpectrometer(BaseSpectrometer, IsotopxMixin):
         self.ask(f"SetSourceOutput {name},{value}")
 
     def read_intensities(
-        self, timeout=60, trigger=False, target="ACQ.B", verbose=False
+        self, timeout=60, trigger=False, target="ACQ.B", verbose=True
     ):
         # self.microcontroller.lock.acquire()
         # verbose=True
         self._read_enabled = True
 
-        # verbose = True
+        verbose = True
 
         if verbose:
             self.debug(
@@ -203,11 +203,12 @@ class NGXSpectrometer(BaseSpectrometer, IsotopxMixin):
                 )
             )
 
-        self.microcontroller.lock.acquire()
+        # self.microcontroller.lock.acquire()
         resp = True
         # trigger_release = self.triggered_lock_release_required
         # self.debug(f'trigger={trigger} triggered={self.microcontroller.triggered} '
         #            f'triggered_locrelease_required={self.triggered_lock_release_required}')
+        # print('treigger', trigger, self.microcontroller.triggered)
         if trigger or not self.microcontroller.triggered:
             resp = self.trigger_acq()
             # trigger_release = self.microcontroller.triggered
@@ -220,6 +221,9 @@ class NGXSpectrometer(BaseSpectrometer, IsotopxMixin):
                 time.sleep(0.95)
                 # if verbose:
                 #     self.debug('trigger wait finished')
+        # else:
+            # self.microcontroller.lock.acquire()
+            # self.triggered_lock_release_required = True
 
         keys = []
         signals = []
@@ -232,7 +236,7 @@ class NGXSpectrometer(BaseSpectrometer, IsotopxMixin):
             keys = self.detector_names[::-1]
             while self._read_enabled:
                 # with self.microcontroller.lock:
-                line = self.readline(verbose=True)
+                line = self.readline(verbose=verbose)
 
                 if verbose:
                     self.debug("raw: {}".format(line))
@@ -297,11 +301,13 @@ class NGXSpectrometer(BaseSpectrometer, IsotopxMixin):
             self.debug("keys: {}".format(keys))
             self.debug("signals: {}".format(signals))
 
-        try:
-            self.microcontroller.lock.release()
-            self.debug(f'Released lock. {self.microcontroller.lock}')
-        except RuntimeError as e:
-            self.debug(f'Cannot release lock. "RuntimeError" {e}')
+        # try:
+        #     # the integration cycle is complete. release the lock
+        #     if inc:
+        #         self.microcontroller.lock.release()
+        #         self.debug(f'Released lock. {self.microcontroller.lock}')
+        # except RuntimeError as e:
+        #     self.debug(f'Cannot release lock. "RuntimeError" {e}')
 
         # if self.triggered_lock_release_required:
         #     self.triggered_lock_release_required = False
@@ -312,10 +318,13 @@ class NGXSpectrometer(BaseSpectrometer, IsotopxMixin):
         # self.debug(f'trigger release. {trigger_release}')
         # if trigger_release:
         # self.triggered_lock_release_required = False
-        try:
-            self.microcontroller.lock.release()
-        except RuntimeError as e:
-            self.debug(f'Trigger Release. Cannot release lock. "RuntimeError" {e}')
+
+        # if self.microcontroller.lock.count>0:
+        #     try:
+        #         self.microcontroller.lock.release()
+        #     except RuntimeError as e:
+        #         if verbose:
+        #             self.debug(f'Trigger Release. Cannot release lock. "RuntimeError" {e}')
 
         return keys, signals, collection_time, inc
 

@@ -183,7 +183,6 @@ class DACScanner(BaseScanner):
         # graph.set_x_title('Magnet DAC (Voltage)')
         # graph.set_y_title('Intensity')
 
-        self._use_mftable_limits_fired()
 
     # private
     def _reset_hook(self):
@@ -197,8 +196,9 @@ class DACScanner(BaseScanner):
         graph.new_series()
         graph.set_x_title("Magnet DAC (Voltage)")
         graph.set_y_title("Intensity")
+        # self._use_mftable_limits_fired()
 
-    # scan methods
+# scan methods
     def _do_step(self, magnet, step):
         magnet.set_dac(step, verbose=False)
 
@@ -316,14 +316,14 @@ class DACScanner(BaseScanner):
             self.tool.low = self.scan_min_dac
             self.tool.overlay.low = self.scan_min_dac
         self._scan_time_length_changed()
-        self.graph.redraw()
+        # self.graph.redraw()
 
     def _scan_max_dac_changed(self):
         if self.tool:
             self.tool.high = self.scan_max_dac
             self.tool.overlay.high = self.scan_max_dac
         self._scan_time_length_changed()
-        self.graph.redraw()
+        # self.graph.redraw()
 
     def _min_dac_changed(self):
         if self.min_dac < self.max_dac:
