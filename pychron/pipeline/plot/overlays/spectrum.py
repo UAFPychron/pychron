@@ -202,7 +202,9 @@ class SpectrumErrorOverlay(AbstractOverlay):
         comp = self.component
         with gc:
             # gc.clip_to_rect(comp.x, comp.y, comp.width, comp.height)
-            gc.clip_to_rect(*(int(p) for p in (comp.x, comp.y, comp.width, comp.height)))
+            gc.clip_to_rect(
+                *(int(p) for p in (comp.x, comp.y, comp.width, comp.height))
+            )
 
             xs = comp.index.get_data()
             ys = comp.value.get_data()
@@ -450,7 +452,9 @@ class PlateauOverlay(BasePlateauOverlay):
             pt1, pt2, y1, y2 = points
             with gc:
                 comp = self.component
-                gc.clip_to_rect(*(int(p) for p in (comp.x, comp.y, comp.width, comp.height)))
+                gc.clip_to_rect(
+                    *(int(p) for p in (comp.x, comp.y, comp.width, comp.height))
+                )
 
                 # gc.clip_to_rect(comp.x, comp.y, comp.width, comp.height)
                 # color = convert_from_pyqt_color(None, None, self.line_color)
