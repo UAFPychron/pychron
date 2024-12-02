@@ -72,9 +72,11 @@ class NGXController(CoreDevice):
     #    else:
     #        resp = self.event_buffer.get()
     #    return resp
-    def set_acquisition_buffer(self, v):
-        self.debug("set acquisition buffer {}".format(v))
-        self.ask("SAB {}".format(v))
+
+    def set_acquisition_buffer(self, flag):
+        flag = "1" if flag else "0"
+        self.debug(f"set acquisition buffer {flag}")
+        self.ask(f"SAB {flag}")
 
     def stop_acquisition(self):
         self.triggered = False

@@ -44,13 +44,9 @@ class NGXGPActuator(ASCIIGPActuator):
             return True
 
     def actuate(self, *args, **kw):
-        # self.ask("StopAcq")
-        # self.controller.stop_acquisition()
-        self.controller.set_acquisition_buffer(1)
-        # self.controller.canceled = True
-        # time.sleep(1)
+        self.controller.set_acquisition_buffer(True)
         ret = super(NGXGPActuator, self).actuate(*args, **kw)
-        self.controller.set_acquisition_buffer(0)
+        self.controller.set_acquisition_buffer(False)
         return ret
 
     def get_channel_state(self, obj, delay=False, verbose=False, **kw):

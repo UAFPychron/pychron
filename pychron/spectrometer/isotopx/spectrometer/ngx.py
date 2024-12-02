@@ -131,6 +131,7 @@ class NGXSpectrometer(BaseSpectrometer, IsotopxMixin):
         if not self.microcontroller.triggered:
             # self.microcontroller.lock.acquire()
             # self.triggered_lock_release_required = True
+
             # self.ask("StopAcq", verbose=verbose)
             self.microcontroller.stop_acquisition()
             self.microcontroller.triggered = True
@@ -194,7 +195,7 @@ class NGXSpectrometer(BaseSpectrometer, IsotopxMixin):
         # verbose=True
         self._read_enabled = True
 
-        verbose = True
+        # verbose = True
 
         if verbose:
             self.debug(
@@ -213,6 +214,7 @@ class NGXSpectrometer(BaseSpectrometer, IsotopxMixin):
             resp = self.trigger_acq()
             # trigger_release = self.microcontroller.triggered
             # self.debug(f'trigger_relase={trigger_release}')
+
             # self.microcontroller.lock.release()
             if resp is not None:
                 # if verbose:
@@ -325,6 +327,15 @@ class NGXSpectrometer(BaseSpectrometer, IsotopxMixin):
         #     except RuntimeError as e:
         #         if verbose:
         #             self.debug(f'Trigger Release. Cannot release lock. "RuntimeError" {e}')
+        #     self.microcontroller.lock.release()
+        # except RuntimeError as e:
+        #     self.debug(f'Cannot release lock. "RuntimeError" {e}')
+        #
+        # if trigger_release:
+        #     try:
+        #         self.microcontroller.lock.release()
+        #     except RuntimeError as e:
+        #         self.debug(f'Trigger Release. Cannot release lock. "RuntimeError" {e}')
 
         return keys, signals, collection_time, inc
 

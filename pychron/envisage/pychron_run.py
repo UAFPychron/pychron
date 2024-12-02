@@ -72,6 +72,7 @@ PACKAGE_DICT = dict(
     LDEOFurnaceControlPlugin="pychron.furnace.tasks.ldeo.furnace_control_plugin",
     ThermoFurnacePlugin="pychron.furnace.tasks.thermo.furnace_plugin",
     RestonFurnacePlugin="pychron.furnace.tasks.reston.furnace_plugin",
+    BakeoutPlugin="pychron.bakeout.tasks.bakeout_plugin",
     # hardware-lasers
     TAPDiodePlugin="pychron.lasers.tasks.plugins.tap",
     UC2000CO2Plugin="pychron.lasers.tasks.plugins.uc2000_plugin",
@@ -220,10 +221,26 @@ def get_user_plugins():
             plugins.append(plugin)
 
     plugins = list(sorted(plugins, key=attrgetter("name")))
-    idx = next((p for p in plugins if p.name == "UpdatePlugin"), None)
-    if idx is not None:
-        p = plugins.pop(idx)
-        plugins.insert(0, p)
+
+    dvcplugin = next((p for p in plugins if p.name == "DVCPlugin"), None)
+    if dvcplugin is not None:
+        # ensure a githost plugin is available
+        githost = next(
+            (p for p in plugins if p.name in ("GitHubPlugin", "LocalGitPlugin")), None
+        )
+        if githost is None:
+            plugins.append(get_plugin("LocalGitPlugin"))
+
+        # make githost plugin run prior to dvc plugin
+        plugins.remove(githost)
+        plugins.insert(0, githost)
+
+    updateplugin = next((p for p in plugins if p.name == "UpdatePlugin"), None)
+    if updateplugin is not None:
+        plugins.remove(updateplugin)
+        plugins.insert(0, updateplugin)
+        # p = plugins.pop(idx)
+        # plugins.insert(0, p)
 
     return plugins
 

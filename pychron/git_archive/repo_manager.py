@@ -1022,7 +1022,10 @@ class GitRepoManager(Loggable):
         self.debug("ahead behind")
 
         repo = self._repo
-        ahead, behind = ahead_behind(repo, remote)
+        if not self._get_remote(remote):
+            ahead, behind = 0, 0
+        else:
+            ahead, behind = ahead_behind(repo, remote)
 
         return ahead, behind
 
@@ -1051,7 +1054,7 @@ class GitRepoManager(Loggable):
 
         with StashCTX(repo):
             try:
-                repo.git.merge(from_.commit)
+                repo.git.merge(from_)
             except GitCommandError:
                 self.debug_exception()
                 if inform:

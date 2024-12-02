@@ -222,7 +222,7 @@ class ExtractionLineManager(Manager, Consoleable):
             self.link_valve_actuation_dict[name] = func
 
     def enable_auto_reload(self):
-        self.file_listener = fm = FileListener(
+        self.file_listener = FileListener(
             path=self.canvas_path, callback=self.reload_canvas
         )
 
@@ -356,7 +356,6 @@ class ExtractionLineManager(Manager, Consoleable):
     def reload_scene_graph(self):
         self.info("reloading canvas scene")
         for c in self.canvases:
-            self.canvas_editor.load(c.canvas2D, self.canvas_path)
             # c.load_canvas_file(c.config_name)
 
             c.load_canvas_file()
@@ -366,6 +365,8 @@ class ExtractionLineManager(Manager, Consoleable):
                     if vc:
                         vc.soft_lock = v.software_lock
                         vc.state = v.state
+
+            self.canvas_editor.load(c.canvas2D, self.canvas_path)
 
     def update_switch_state(self, name, state, *args, **kw):
         # self.debug('update switch state {} {} args={} kw={}'.format(name, state, args, kw))
@@ -612,7 +613,7 @@ class ExtractionLineManager(Manager, Consoleable):
 
     def new_canvas(self, config=None):
         c = ExtractionLineCanvas(manager=self, display_name="Extraction Line")
-        c.load_canvas_file(canvas_config_path=config)
+        # c.load_canvas_file(canvas_config_path=config)
         self.canvases.append(c)
         c.canvas2D.trait_set(
             display_volume=self.display_volume, volume_key=self.volume_key
@@ -871,11 +872,12 @@ class ExtractionLineManager(Manager, Consoleable):
         ret = True
 
         if force or self.check_master_owner:
-            try:
-                requestor = gethostbyname(gethostname())
-            except gaierror:
-                self.debug("failed to get host name. defaulting to 'localhost'")
-                requestor = "localhost"
+            if requestor is None:
+                try:
+                    requestor = gethostbyname(gethostname())
+                except gaierror:
+                    self.debug("failed to get host name. defaulting to 'localhost'")
+                    requestor = "localhost"
 
             self.debug("checking ownership. requestor={}".format(requestor))
             try:

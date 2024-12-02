@@ -869,11 +869,14 @@ class DVC(Loggable):
         fits,
         refs,
         use_source_correction,
+        use_discrimination,
         standard_ratios,
         reference_data,
     ):
         if use_source_correction:
             ai.dump_source_correction_icfactors(refs)
+        elif use_discrimination:
+            ai.dump_disc_icfactors(refs)
         else:
             if fits and dets:
                 self.info("Saving icfactors for {}".format(ai))
@@ -1438,6 +1441,15 @@ class DVC(Loggable):
     def clear_pull_cache(self):
         self._pull_cache = {}
 
+    def is_clean(self, name):
+        try:
+            repo = self._get_repository(name)
+            ahead, behind = repo.ahead_behind()
+            return ahead == 0 and behind == 0
+        except BaseException as e:
+            self.debug("is clean exception {}".format(e))
+            return False
+
     def sync_repo(self, name, use_progress=True, pull_frequency=None):
         """
         pull or clone an repo
@@ -1470,14 +1482,7 @@ class DVC(Loggable):
             repo = self._get_repository(name)
             repo.pull(use_progress=use_progress, use_auto_pull=self.use_auto_pull)
 
-            # merge any new commits on the data_collection branch to this branch
-            try:
-                repo.merge("origin/data_collection", inform=False)
-            except BaseException:
-                self.debug(
-                    "merge with origin/data_collection failed. This is not an issue if you are only using local "
-                    "repos"
-                )
+            self._merge_data_collection(repo)
 
             return True
         else:
@@ -1496,7 +1501,9 @@ class DVC(Loggable):
                     return True
                 elif service.clone_from(name, root, self.organization):
                     repo = self._get_repository(name)
-                    repo.merge("origin/data_collection", inform=False)
+                    self._merge_data_collection(repo)
+                    # repo.merge("origin/data_collection", inform=False)
+
                     return True
                 else:
                     self.warning_dialog(
@@ -1513,6 +1520,33 @@ class DVC(Loggable):
                 # if name in names:
                 #     service.clone_from(name, root, self.organization)
                 #     return True
+
+    def _merge_data_collection(self, repo):
+        # merge any new commits on the data_collection branch to this branch
+        # get all branches like data_collection
+        # branches = repo.active_repo.git.branch('-a').split('\n')
+        # branches = [b.strip() for b in branches]
+        # branches = [b for b in branches if 'data_collection' in b]
+        branches = ["origin/data_collection"]
+        for b in branches:
+            if b.startswith("remotes"):
+                b = b.replace("remotes/", "")
+
+            try:
+                # repo.active_repo.git.checkout('origin/data_collection', '.')
+                # repo.active_repo.git.add('.')
+                # repo.active_repo.git.commit('-m', 'Merge origin/data_collection branch')
+                # repo.merge("origin/data_collection", inform=False)
+                # if repo.name == 'Henry<GitRepo>' and b == 'origin/data_collection':
+                #     continue
+                repo.merge(b, inform=False)
+
+            except BaseException:
+                self.debug_exception()
+                self.debug(
+                    f"merge with {b} failed. This is not an issue if you are only using local "
+                    "repos"
+                )
 
     def rollback_repository(self, expid):
         repo = self._get_repository(expid)

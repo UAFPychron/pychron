@@ -115,6 +115,7 @@ class Line(QPrimitive):
     data_rotation = Float
     width = 1
     height = Property
+    orientation = None
 
     def __init__(self, p1=None, p2=None, *args, **kw):
         self.set_startpoint(p1, **kw)
@@ -132,6 +133,11 @@ class Line(QPrimitive):
             p1 = Point(*p1, **kw)
         self.end_point = p1
         if p1:
+            if self.orientation == "vertical":
+                self.start_point.x = p1.x
+            elif self.orientation == "horizontal":
+                self.start_point.y = p1.y
+
             if len(self.primitives) == 2:
                 self.primitives[1] = self.end_point
             else:
@@ -144,6 +150,11 @@ class Line(QPrimitive):
         self.start_point = p1
 
         if p1:
+            if self.orientation == "vertical":
+                self.end_point.x = p1.x
+            elif self.orientation == "horizontal":
+                self.end_point.y = p1.y
+
             if len(self.primitives) > 0:
                 self.primitives[0] = self.start_point
             else:
@@ -180,6 +191,11 @@ class Line(QPrimitive):
 
         b = calc_rotation(x1, y1, x2, y2)
         self.screen_rotation = b
+
+    def request_layout(self):
+        self.start_point.request_layout()
+        self.end_point.request_layout()
+        super(Line, self).request_layout()
 
 
 class Triangle(QPrimitive):
@@ -689,8 +705,8 @@ class PolyLine(QPrimitive):
 class BorderLine(Line, Bordered):
     border_width = 10
 
-    clear_vorientation = False
-    clear_horientation = False
+    # clear_vorientation = False
+    # clear_horientation = False
 
     def render_border_gaps(self, gc, t, x, y, cx, cy, width, height, cw4):
         p1, p2 = self.start_point, self.end_point
