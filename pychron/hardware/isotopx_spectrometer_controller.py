@@ -28,6 +28,16 @@ import time
 
 from pychron.hardware.core.core_device import CoreDevice
 
+# import ctypes, _thread
+# class mRLock(_thread.RLock):
+#
+#     offsetof_rlock_count = 32 # on 64-bit system
+#
+#     @property
+#     def count(self):
+#         rlock_count_b = ctypes.string_at(id(self)+self.offsetof_rlock_count, 8)
+#         return int.from_bytes(rlock_count_b, 'little', signed=False)
+#
 
 class NGXController(CoreDevice):
     username = Str("")
@@ -46,10 +56,14 @@ class NGXController(CoreDevice):
             (cmd.startswith(t) for t in ("GetValveStatus", "OpenValve", "CloseValve"))
         ):
             if resp and resp.strip() not in ("E00", "OPEN", "CLOSED"):
+                # if resp.strip()=='E04':
+                #     time.sleep(3)
+                #     return "OPEN\r\n"
                 # self.event_buf.push(resp)
                 self.debug("retrying")
                 time.sleep(0.5)
                 return self.ask(cmd, *args, **kw)
+
         return resp
 
     # def read(self, *args, **kw):
@@ -58,6 +72,7 @@ class NGXController(CoreDevice):
     #    else:
     #        resp = self.event_buffer.get()
     #    return resp
+
     def set_acquisition_buffer(self, flag):
         flag = "1" if flag else "0"
         self.debug(f"set acquisition buffer {flag}")
@@ -81,6 +96,7 @@ class NGXController(CoreDevice):
         # trying a new locking mechanism see ngx.trigger for more details
 
         self.lock = Lock()
+        # self.lock = mRLock()
         #   self.event_buffer = Queue()
 
         if ret:
@@ -92,8 +108,6 @@ class NGXController(CoreDevice):
             if resp:
                 self.info("NGX-{}".format(resp))
                 self.ask("Login {},{}".format(self.username, self.password))
-
             return True
-
 
 # ============= EOF =============================================
