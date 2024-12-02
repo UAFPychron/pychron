@@ -336,7 +336,7 @@ class SampleEntry(DVCAble):
 
     auto_add_project_repository = Bool
 
-    def activated(self):
+    def activate(self):
         bind_preference(
             self,
             "auto_add_project_repository",
