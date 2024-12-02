@@ -203,7 +203,7 @@ class SpectrumErrorOverlay(AbstractOverlay):
         with gc:
             # gc.clip_to_rect(comp.x, comp.y, comp.width, comp.height)
             gc.clip_to_rect(
-                *(int(p) for p in (comp.x, comp.y, comp.width, comp.height))
+                *(float(p) for p in (comp.x, comp.y, comp.width, comp.height))
             )
 
             xs = comp.index.get_data()
@@ -453,7 +453,7 @@ class PlateauOverlay(BasePlateauOverlay):
             with gc:
                 comp = self.component
                 gc.clip_to_rect(
-                    *(int(p) for p in (comp.x, comp.y, comp.width, comp.height))
+                    *(float(p) for p in (comp.x, comp.y, comp.width, comp.height))
                 )
 
                 # gc.clip_to_rect(comp.x, comp.y, comp.width, comp.height)
