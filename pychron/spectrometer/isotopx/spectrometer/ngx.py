@@ -188,9 +188,7 @@ class NGXSpectrometer(BaseSpectrometer, IsotopxMixin):
     def set_source_parameter(self, name, value):
         self.ask(f"SetSourceOutput {name},{value}")
 
-    def read_intensities(
-        self, timeout=60, trigger=False, target="ACQ.B", verbose=True
-    ):
+    def read_intensities(self, timeout=60, trigger=False, target="ACQ.B", verbose=True):
         # self.microcontroller.lock.acquire()
         # verbose=True
         self._read_enabled = True
@@ -224,8 +222,8 @@ class NGXSpectrometer(BaseSpectrometer, IsotopxMixin):
                 # if verbose:
                 #     self.debug('trigger wait finished')
         # else:
-            # self.microcontroller.lock.acquire()
-            # self.triggered_lock_release_required = True
+        # self.microcontroller.lock.acquire()
+        # self.triggered_lock_release_required = True
 
         keys = []
         signals = []
@@ -395,4 +393,6 @@ class NGXSpectrometer(BaseSpectrometer, IsotopxMixin):
     def _integration_time_default(self):
         self.default_integration_time = ISOTOPX_DEFAULT_INTEGRATION_TIME
         return ISOTOPX_DEFAULT_INTEGRATION_TIME
+
+
 # ============= EOF =============================================

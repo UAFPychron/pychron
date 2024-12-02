@@ -39,6 +39,7 @@ from pychron.hardware.core.core_device import CoreDevice
 #         return int.from_bytes(rlock_count_b, 'little', signed=False)
 #
 
+
 class NGXController(CoreDevice):
     username = Str("")
     password = Str("")
@@ -109,5 +110,6 @@ class NGXController(CoreDevice):
                 self.info("NGX-{}".format(resp))
                 self.ask("Login {},{}".format(self.username, self.password))
             return True
+
 
 # ============= EOF =============================================
